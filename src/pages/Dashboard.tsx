@@ -29,13 +29,13 @@ const Dashboard = () => {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       const { data: roleData } = await supabase
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (profileData) setProfile(profileData);
       if (roleData) setUserRole(roleData.role);
@@ -154,6 +154,24 @@ const Dashboard = () => {
                 >
                   Browse Hackathons
                 </Button>
+                {userRole === 'organizer' && (
+                  <>
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={() => navigate("/create-event")}
+                    >
+                      Create Event
+                    </Button>
+                    <Button 
+                      className="w-full justify-start" 
+                      variant="outline"
+                      onClick={() => navigate("/analytics")}
+                    >
+                      View Analytics
+                    </Button>
+                  </>
+                )}
                 <Button 
                   className="w-full justify-start" 
                   variant="outline"

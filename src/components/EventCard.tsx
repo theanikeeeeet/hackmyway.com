@@ -1,14 +1,13 @@
 import { Link } from "react-router-dom";
-import { Calendar, Trophy, Bookmark, ExternalLink } from "lucide-react";
+import { Calendar, Trophy, Bookmark, ExternalLink, MapPin } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { Hackathon } from "@/data/hackathons";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 interface EventCardProps {
-  hackathon: Hackathon;
+  hackathon: any;
 }
 
 const EventCard = ({ hackathon }: EventCardProps) => {
@@ -38,8 +37,8 @@ const EventCard = ({ hackathon }: EventCardProps) => {
     switch (status) {
       case "upcoming": return "bg-upcoming";
       case "ongoing": return "bg-ongoing";
-      case "ending-soon": return "bg-ending-soon";
-      case "closed": return "bg-closed";
+      case "completed": return "bg-closed";
+      case "cancelled": return "bg-closed";
       default: return "bg-muted";
     }
   };
@@ -76,31 +75,36 @@ const EventCard = ({ hackathon }: EventCardProps) => {
           </div>
           
           <Badge variant="secondary" className="w-fit">
-            {hackathon.source}
+            {hackathon.category}
           </Badge>
         </CardHeader>
 
         <CardContent className="space-y-3 pb-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            <span>{formatDate(hackathon.start_date)} - {formatDate(hackathon.end_date)}</span>
+            <span>{formatDate(hackathon.date)}</span>
           </div>
           
-          <div className="flex items-center gap-2 text-sm font-semibold text-success">
-            <Trophy className="h-4 w-4" />
-            <span>{hackathon.prize}</span>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <MapPin className="h-4 w-4" />
+            <span>{hackathon.location}</span>
           </div>
+          
+          {hackathon.prize_pool && (
+            <div className="flex items-center gap-2 text-sm font-semibold text-success">
+              <Trophy className="h-4 w-4" />
+              <span>{hackathon.prize_pool}</span>
+            </div>
+          )}
 
           <p className="line-clamp-2 text-sm text-muted-foreground">
             {hackathon.description}
           </p>
 
-          <div className="flex flex-wrap gap-2">
-            {hackathon.tags.map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-xs">
+              {hackathon.difficulty}
+            </Badge>
           </div>
         </CardContent>
 

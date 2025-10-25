@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      hackathons: {
+        Row: {
+          category: string
+          created_at: string | null
+          date: string
+          description: string
+          difficulty: string
+          id: string
+          image_url: string | null
+          location: string
+          max_team_size: number | null
+          organizer_id: string
+          prize_pool: string | null
+          registration_deadline: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          date: string
+          description: string
+          difficulty: string
+          id?: string
+          image_url?: string | null
+          location: string
+          max_team_size?: number | null
+          organizer_id: string
+          prize_pool?: string | null
+          registration_deadline?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          date?: string
+          description?: string
+          difficulty?: string
+          id?: string
+          image_url?: string | null
+          location?: string
+          max_team_size?: number | null
+          organizer_id?: string
+          prize_pool?: string | null
+          registration_deadline?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -52,6 +106,112 @@ export type Database = {
           website_url?: string | null
         }
         Relationships: []
+      }
+      registrations: {
+        Row: {
+          hackathon_id: string
+          id: string
+          registered_at: string | null
+          status: string | null
+          team_id: string | null
+          user_id: string
+        }
+        Insert: {
+          hackathon_id: string
+          id?: string
+          registered_at?: string | null
+          status?: string | null
+          team_id?: string | null
+          user_id: string
+        }
+        Update: {
+          hackathon_id?: string
+          id?: string
+          registered_at?: string | null
+          status?: string | null
+          team_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrations_hackathon_id_fkey"
+            columns: ["hackathon_id"]
+            isOneToOne: false
+            referencedRelation: "hackathons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "registrations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          id: string
+          joined_at: string | null
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string | null
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string | null
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          hackathon_id: string
+          id: string
+          leader_id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          hackathon_id: string
+          id?: string
+          leader_id: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          hackathon_id?: string
+          id?: string
+          leader_id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teams_hackathon_id_fkey"
+            columns: ["hackathon_id"]
+            isOneToOne: false
+            referencedRelation: "hackathons"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

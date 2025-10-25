@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import FilterBar from "@/components/FilterBar";
 import EventCard from "@/components/EventCard";
 import Footer from "@/components/Footer";
-import { hackathons } from "@/data/hackathons";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
 import { toast } from "sonner";
@@ -14,8 +14,28 @@ const Index = () => {
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
+  const [hackathons, setHackathons] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchHackathons();
+  }, []);
+
+  const fetchHackathons = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("hackathons")
+      .select("*")
+      .order("date", { ascending: true });
+
+    if (!error && data) {
+      setHackathons(data);
+    }
+    setLoading(false);
+  };
 
   const handleRefresh = () => {
+    fetchHackathons();
     setLastRefreshed(new Date());
     toast.success("Data refreshed successfully!");
   };
@@ -29,13 +49,13 @@ const Index = () => {
   const filteredHackathons = hackathons.filter((hackathon) => {
     const matchesSearch = searchQuery === "" || 
       hackathon.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      hackathon.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      hackathon.category?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       hackathon.description.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesStatus = !selectedStatus || hackathon.status === selectedStatus;
-    const matchesPlatform = !selectedPlatform || hackathon.source === selectedPlatform;
+    const matchesDifficulty = !selectedPlatform || hackathon.difficulty === selectedPlatform;
 
-    return matchesSearch && matchesStatus && matchesPlatform;
+    return matchesSearch && matchesStatus && matchesDifficulty;
   });
 
   return (
@@ -63,7 +83,11 @@ const Index = () => {
             </Button>
           </div>
 
-          {filteredHackathons.length > 0 ? (
+          {loading ? (
+            <div className="flex min-h-[400px] items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          ) : filteredHackathons.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {filteredHackathons.map((hackathon) => (
                 <EventCard key={hackathon.id} hackathon={hackathon} />
